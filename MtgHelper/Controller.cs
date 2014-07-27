@@ -1,14 +1,18 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace MtgHelper
 {
 	public class Controller : IDisposable, INotifyPropertyChanged
 	{
+		Bitmap[] _imgs;
 		Thread _capture;
 		bool _disposed;
 		string _tempfile;
@@ -23,11 +27,33 @@ namespace MtgHelper
 			var br = new System.Drawing.Point( 286 + 1049, 121 + 433 );
 			var s = new Shot( b, tl, br );
 			var c = s.GetCards();
+			var iml = new List<Bitmap>();
 			foreach( var ca in c )
-				ca.Draw( b );
-			SetImage( b );
+			{
+				iml.Add( ca.Data() );
+			}
+			_imgs = ( iml.ToArray() );
+
 		}
 
+		public ObservableCollection<ImageSource> Images
+		{
+			get
+			{
+				var results = new ObservableCollection<ImageSource>();
+				foreach( var card in _imgs )
+				{
+					var bitmapSource =
+				System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+					card.GetHbitmap( System.Drawing.Color.Transparent ),
+					IntPtr.Zero,
+					new Int32Rect( 0, 0, card.Width, card.Height ),
+					null );
+					results.Add( bitmapSource );
+				}
+				return results;
+			}
+		}
 		void RunCapture()
 		{
 			while( !_disposed )
@@ -37,27 +63,22 @@ namespace MtgHelper
 				System.Drawing.Image img = sc.CaptureScreen();
 
 				var oldBitmap =
-					img as System.Drawing.Bitmap ??
-					new System.Drawing.Bitmap( img );
+					img as System.Drawing.Bitmap;// ??
+				//					new System.Drawing.Bitmap( img );
 
-				SetImage( oldBitmap );
+				//SetImage( oldBitmap );
 				Thread.Sleep( 1000 );
 
 			}
 		}
 
-		void SetImage( System.Drawing.Bitmap oldBitmap )
+		void SetImage( System.Drawing.Bitmap[] oldBitmap )
 		{
 			Application.Current.Dispatcher.Invoke( (Action) ( delegate
 			{
-				var bitmapSource =
-					System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-						oldBitmap.GetHbitmap( System.Drawing.Color.Transparent ),
-						IntPtr.Zero,
-						new Int32Rect( 0, 0, oldBitmap.Width, oldBitmap.Height ),
-						null );
 
-				Image = bitmapSource;
+
+				//				Image = bitmapSource;
 				FirePropertyChanged( "Image" );
 
 			} ) );

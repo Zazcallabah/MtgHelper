@@ -3,11 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-		<StackPanel>
 		<!--	<Image Source="{Binding Image}" MouseDown="MouseDown" MouseUp="MouseUp" MouseMove="MouseMove"></Image>-->
-			<Image Source="{Binding Image}"></Image>
-			<TextBlock Text="{Binding Text}"></TextBlock>
-			<Button Click="Click">Crop</Button>
-		</StackPanel>
+			<ListView ItemsSource="{Binding Images}">
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<StackPanel>
+						<Border Padding="4" BorderBrush="Blue" BorderThickness="2">
+							<Image Source="{Binding}" />
+					</Border>
+					</StackPanel>
+						
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>
     </Grid>
 </Window>
