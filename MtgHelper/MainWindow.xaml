@@ -3,6 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-		<Button Click="Click"></Button>
+		<StackPanel>
+		<!--	<Image Source="{Binding Image}" MouseDown="MouseDown" MouseUp="MouseUp" MouseMove="MouseMove"></Image>-->
+			<Image Source="{Binding Image}"></Image>
+			<TextBlock Text="{Binding Text}"></TextBlock>
+			<Button Click="Click">Crop</Button>
+		</StackPanel>
     </Grid>
 </Window>
