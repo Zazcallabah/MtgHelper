@@ -54,12 +54,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CalibrationController.cs" />
+    <Compile Include="CalibrationObject.cs" />
+    <Compile Include="Calibrator.xaml.cs">
+      <DependentUpon>Calibrator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Card.cs" />
     <Compile Include="ColorExt.cs" />
     <Compile Include="Column.cs" />
     <Compile Include="Controller.cs" />
+    <Compile Include="Crc32.cs" />
     <Compile Include="ScreenCapture.cs" />
     <Compile Include="Shot.cs" />
+    <Page Include="Calibrator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

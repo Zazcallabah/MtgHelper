@@ -60,15 +60,15 @@ namespace MtgHelper
 
 		Card Make( int y, double cardwidth )
 		{
-			const double frac_height = 0.067;
-			const double frac_width = 0.80;
-			const double frac_xpad = 0.075;
-			const double frac_ypad = 0.068;
+			const double fracHeight = 0.067;
+			const double fracWidth = 0.80;
+			const double fracXpad = 0.075;
+			const double fracYpad = 0.072;
 
-			var cardtlX = (int) Math.Floor( _topleft.X + frac_xpad * cardwidth );
-			var cardtlY = (int) Math.Floor( y + frac_ypad * cardwidth );
-			var cardbrX = (int) Math.Floor( cardtlX + cardwidth * frac_width );
-			var cardbrY = (int) Math.Floor( cardtlY + cardwidth * frac_height );
+			var cardtlX = (int) Math.Floor( _topleft.X + fracXpad * cardwidth );
+			var cardtlY = (int) Math.Floor( y + fracYpad * cardwidth );
+			var cardbrX = (int) Math.Floor( cardtlX + cardwidth * fracWidth );
+			var cardbrY = (int) Math.Floor( cardtlY + cardwidth * fracHeight );
 			return new Card( _b )
 			{
 				TopLeft = new Point( cardtlX, cardtlY ),

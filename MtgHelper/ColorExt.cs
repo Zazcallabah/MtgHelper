@@ -1,10 +1,26 @@
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace MtgHelper
 {
 	public static class ColorExt
 	{
+		public static long Crc32( this Bitmap bitmap )
+		{
+			var crc = new Crc32();
+			BitmapData bmpdata = bitmap.LockBits( new Rectangle( 0, 0, bitmap.Width, bitmap.Height ), ImageLockMode.ReadOnly, bitmap.PixelFormat );
+			int numbytes = bmpdata.Stride * bitmap.Height;
+			byte[] bytedata = new byte[numbytes];
+			IntPtr ptr = bmpdata.Scan0;
+
+			Marshal.Copy( ptr, bytedata, 0, numbytes );
+
+			bitmap.UnlockBits( bmpdata );
+			crc.Update( bytedata );
+			return crc.Value;
+		}
 		public static void Mask( this Bitmap b )
 		{
 			for( int x = 0; x < b.Width; x++ )
@@ -15,7 +31,7 @@ namespace MtgHelper
 						b.SetPixel( x, y, Color.White );
 				}
 		}
-		public static void DrawRectangle( this Bitmap b, System.Drawing.Point tl, System.Drawing.Point br )
+		public static void DrawRectangle( this Bitmap b, Point tl, Point br )
 		{
 			for( int x = tl.X; x < br.X; x++ )
 			{
@@ -38,10 +54,10 @@ namespace MtgHelper
 		public static bool IsColor( this Color c )
 		{
 			const int threshold = 60;
-			var dRG = Math.Abs( c.R - c.G );
-			var dGB = Math.Abs( c.G - c.B );
-			var dBR = Math.Abs( c.B - c.R );
-			return dRG > threshold || dGB > threshold || dBR > threshold;
+			var dRg = Math.Abs( c.R - c.G );
+			var dGb = Math.Abs( c.G - c.B );
+			var dBr = Math.Abs( c.B - c.R );
+			return dRg > threshold || dGb > threshold || dBr > threshold;
 		}
 
 		public static bool IsGray( this Color c )

@@ -1,19 +1,5 @@
-﻿using System;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Point = System.Windows.Point;
-
 
 namespace MtgHelper
 {
@@ -22,14 +8,29 @@ namespace MtgHelper
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+
+
 		public MainWindow()
 		{
-			InitializeComponent();
 			DataContext = new Controller();
+			InitializeComponent();
+			Calibrate();
 		}
 
-		public void Click( object sender, EventArgs e )
+		public void Calibrate()
 		{
+			var controller = new CalibrationController();
+			var search = new Calibrator { Controller = controller };
+			var result = search.ShowDialog();
+			if( !result.HasValue || !result.Value )
+				Close();
+
+			( (Controller) DataContext ).Init( new CalibrationObject( controller ) );
+		}
+
+		void ButtonBase_OnClick( object sender, RoutedEventArgs e )
+		{
+			Calibrate();
 		}
 	}
 }

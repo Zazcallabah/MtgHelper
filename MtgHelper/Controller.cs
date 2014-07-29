@@ -1,102 +1,80 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace MtgHelper
 {
 	public class Controller : IDisposable, INotifyPropertyChanged
 	{
-		Bitmap[] _imgs;
+		readonly Dictionary<long, Bitmap> _imgs = new Dictionary<long, Bitmap>();
+		CalibrationObject _calibration;
 		Thread _capture;
-		bool _disposed;
-		string _tempfile;
+		bool _closeSignal;
+
 		public Controller()
 		{
-			_disposed = false;
-			//	_capture = new Thread( RunCapture );
-			//	_capture.Start();
-			var img = System.Drawing.Image.FromFile( @"C:\src\git\MtgHelper\MtgHelper\nozoom.bmp" );
-			var b = new Bitmap( img );
-			var tl = new System.Drawing.Point( 286, 121 );
-			var br = new System.Drawing.Point( 286 + 1049, 121 + 433 );
-			var s = new Shot( b, tl, br );
-			var c = s.GetCards();
-			var iml = new List<Bitmap>();
-			foreach( var ca in c )
-			{
-				iml.Add( ca.Data() );
-			}
-			_imgs = ( iml.ToArray() );
-
+			_closeSignal = false;
 		}
 
-		public ObservableCollection<ImageSource> Images
+		public string Text
 		{
-			get
-			{
-				var results = new ObservableCollection<ImageSource>();
-				foreach( var card in _imgs )
-				{
-					var bitmapSource =
-				System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-					card.GetHbitmap( System.Drawing.Color.Transparent ),
-					IntPtr.Zero,
-					new Int32Rect( 0, 0, card.Width, card.Height ),
-					null );
-					results.Add( bitmapSource );
-				}
-				return results;
-			}
+			get { return _imgs.Count.ToString(); }
 		}
-		void RunCapture()
-		{
-			while( !_disposed )
-			{
-				ScreenCapture sc = new ScreenCapture();
-				// capture entire screen, and save it to a file
-				System.Drawing.Image img = sc.CaptureScreen();
-
-				var oldBitmap =
-					img as System.Drawing.Bitmap;// ??
-				//					new System.Drawing.Bitmap( img );
-
-				//SetImage( oldBitmap );
-				Thread.Sleep( 1000 );
-
-			}
-		}
-
-		void SetImage( System.Drawing.Bitmap[] oldBitmap )
-		{
-			Application.Current.Dispatcher.Invoke( (Action) ( delegate
-			{
-
-
-				//				Image = bitmapSource;
-				FirePropertyChanged( "Image" );
-
-			} ) );
-		}
-
 
 		public void Dispose()
 		{
-			_disposed = true;
-		}
-
-		public BitmapSource Image
-		{
-			get;
-			private set;
+			_closeSignal = true;
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		public void Init( CalibrationObject c )
+		{
+			_calibration = c;
+			_capture = new Thread( RunCapture );
+			_capture.Start();
+		}
+
+		void RunCapture()
+		{
+			while( !_closeSignal )
+			{
+				var sc = new ScreenCapture();
+				var img = sc.CaptureScreen() as Bitmap;
+				var s = new Shot( img, _calibration.Topleft, _calibration.Bottomright );
+				var c = s.GetCards();
+
+				foreach( var ca in c )
+				{
+					var d = ca.Data();
+					var hash = d.Crc32();
+					if( !_imgs.ContainsKey( hash ) )
+					{
+						_imgs.Add( hash, d );
+						Application.Current.Dispatcher.Invoke(
+							delegate
+							{
+								if( _closeSignal )
+									return;
+								FirePropertyChanged( "Text" );
+							} );
+					}
+				}
+
+				Wait( 500 );
+			}
+		}
+
+		void Wait( int ms )
+		{
+			var ts = TimeSpan.FromMilliseconds( ms );
+			var mark = DateTime.Now;
+			while( mark + ts > DateTime.Now && !_closeSignal )
+				Thread.Sleep( 50 );
+		}
 
 		protected virtual void FirePropertyChanged( string propertyName )
 		{
