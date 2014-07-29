@@ -8,11 +8,9 @@
 			<RowDefinition Height="30"></RowDefinition>
 			<RowDefinition Height="30"></RowDefinition>
 		</Grid.RowDefinitions>
-		<Canvas Name="cnvImage" Visibility="{Binding StateTwoThree}">
+		<Canvas Name="cnvImage">
 			<Image Name="imgPreview" Source="{Binding Screen}" MouseLeftButtonDown="MouseDown" MouseMove="MouseMove" PreviewMouseUp="ImgPreview_OnPreviewMouseUp" />
 		</Canvas>
-		<TextBlock Visibility="{Binding StateOne}">Position MTGO the way you prefer. Open the collection you wish to scan. Move this window to cover the cards portion. Press Go.</TextBlock>
-		<Button Grid.Row="1" Click="ToggleShots" Visibility="{Binding StateOne}">Go</Button>
-		<Button Grid.Row="1" Click="ButtonBase_OnClick" Visibility="{Binding StateTwo}" IsEnabled="{Binding Done}">Done</Button>
+		
 	</Grid>
 </Window>
