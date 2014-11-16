@@ -1,0 +1,86 @@
+	
+ScreenCaptureEngine:
+	Runs in separate thread.
+	Continuously captures foreground window and tests it for relevance.
+	All relevant window handles are remembered. 'Relevant' is hard coded, basically.
+	If foreground window is already remembered relevant, skip to next step.
+	All relevant window handles are periodically screenshotted and stored. If they differ from existing image, an event is fired.
+	If a relevant window is closed, then that handle is thrown away.
+	Different relevant windows need different image processing, so they are not configurable?
+	
+ImageProcessing:
+	Input is just an image bitmap, so testing should be easy.
+	Start with card collection, because easiest. Then draft window.
+	Figure out how to pixelwalk and find the card display area.
+		need qualifier to check if there actually is a visible card display area
+	Make sure to handle resized columns and rearranged areas.
+	Pixelwalk to find first card.
+	Pixelwalk around that card's edge to find that card's corners.
+		make sure to check if the card overflows out of the card display area.
+		card can overflow at both top and bottom
+	Store first card bottom left corder coordinates
+	Make note of the card size and position, give the card an index. Use this to do CardProcessing
+	pixelwalk from card top right corner to the right, find next card, repeat
+		if edge of display area is found, go to first card bottom left corner and go down instead.
+		when card is found on next row, replace existing first card bottom coordinate
+		if bottom edge of display area is found, all current cards have been found
+	
+CardProcessing:
+	Make a hash of the card image. Use only the top part of the card. Use that hash to lookup card identity.
+	If no identity is found, check card size, if not min size, alert that card minimization should be done.
+	If min size, query for correct card name, and store resulting hash in database.
+	When card is identified, the index from indexprocessing needs to be associated with the card identity, not the hash.
+	
+DraftProcessing:
+	Is a separate thing entirely. 
+	Needs to identify that draft pick has been done, probably through card count.
+	Uses the list of 'current cards displayed' and connects it to draft pick selection instance.
+	As a start, just have an array of selection instances, where each instance holds the possible choices,
+		and preferably some way to determine which one was picked. (this may have to be added to
+		card processing detecting card border.)
+	The rest can be determined from that list.
+	
+ImageProcessingInGame:
+	More difficult beast. display area is more complex, separate areas for graveyard, revealed cards etc.
+	Cards are not neccesarily aligned like we're used to.
+	Card size may be strange?
+	Card overlap may be a thing.
+	The stack is extra tricky here i think.
+	
+	
+Processing needs to be quick enough so that it can be done between screenshot updates.
+Also it needs to be quick enough to handle all card updates before draft pick times out.
+
+* what if we just hash the card name part of the card, with colors, and simply ask for names we do not recognize?
+	* befor asking we could signal "resize to max card size to auto-ocr card name" (we need the resolution and font change for this)
+	* and then if any are missing allow custom labling. save hash-name connections for later? every size (and there are a lot of them) is needed, but only a 64 something bit hash for each seems plausible
+	* We need to be awesome at detecting card location and card sizes. color-walk the entire card always?
+	
+	* you just start the program, it should auto detect active window, draft area, and preferably card size
+auto detect should screenshot active window, but when correct window is found that should be used instead.
+	note that mtgo can use multiple windows, is that too complex? always screenshot active window, and all remembered window instances? can we do that? what if window instances are closed, will we crash?
+
+* need screenshots from draft area at high res to make this work i think. Does window size matter?
+
+Second stage would be detecting cards in play area. Each segment of the area would need a state, and a way to determine the state (opened, closed). The areas can move as well which is tricky.
+
+* Card detection should display card name, gatherer score, color?, cost in tix, archetype, show card on hover?
+Setting for 'display outside information', the rest is just automated note-taking.
+
+*need a way to script tesseract, or other ocr, and also script tesseract training - which i think only works on linux? uh-oh.
+I want to, on the fly, be able to generate a training image and a text string from a card, and do we really need tesseract for this? We could just assign WE COULD ASSIGN MIN SIZE HASHES AND DISTRIBUTE THOSE WITH THE APP.
+We dont really need ocr at all maybe?
+
+settings/setup would include a list of 'sets' where one set has a name or some other identifier, and a list of hashes to names. Distubuted is just the hash for every card at minimum size, but the program should add hashes when they are discovered.
+This way you could load a 'hashfile' created from one app on another app? 
+
+need some kind of database, with all that information. whenever a card is detected in current window, it is assigned a window position, and resize should keep window position but add hashes, as soon as a lookup hits, enter all hashes into the database.
+Start by having all names in current set in an autocompletebox when allowing user to type name. Force conforming to correct name.
+
+refresh cached gatherer score button?
+
+Preferably auto-detect, but maybe just type in opponent name and draft position, as a start just number them?
+* Before pick 8 you can guess color openness by statistics, but after 8 you can track which cards were removed from the pack.
+* in some way you could also track which players have seen which cards.
+* when you start tracking ingame cards, you could inject that information as well and retroactively assert other players' card picks
+
