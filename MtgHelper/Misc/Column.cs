@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace MtgHelper
+namespace MtgHelper.Misc
 {
 	public class Column
 	{
@@ -23,11 +23,11 @@ namespace MtgHelper
 			_maxbottomrightBoundary = maxbottomrightBoundary;
 		}
 
-		public Card[] GetCards()
+		public CardImage[] GetCards()
 		{
 			double cardwidth = _topright.X - _topleft.X;
 
-			var l = new List<Card> { Make( _topleft.Y, cardwidth ) };
+			var l = new List<CardImage> { Make( _topleft.Y, cardwidth ) };
 			bool inCard = true;
 			int lastcard = _topleft.Y;
 
@@ -58,7 +58,7 @@ namespace MtgHelper
 			return l.ToArray();
 		}
 
-		Card Make( int y, double cardwidth )
+		CardImage Make( int y, double cardwidth )
 		{
 			const double fracHeight = 0.067;
 			const double fracWidth = 0.80;
@@ -69,7 +69,7 @@ namespace MtgHelper
 			var cardtlY = (int) Math.Floor( y + fracYpad * cardwidth );
 			var cardbrX = (int) Math.Floor( cardtlX + cardwidth * fracWidth );
 			var cardbrY = (int) Math.Floor( cardtlY + cardwidth * fracHeight );
-			return new Card( _b )
+			return new CardImage( _b )
 			{
 				TopLeft = new Point( cardtlX, cardtlY ),
 				BottomRight = new Point( cardbrX, cardbrY )

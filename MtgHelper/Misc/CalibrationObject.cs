@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace MtgHelper
+namespace MtgHelper.Misc
 {
 	public class CalibrationObject
 	{
@@ -14,7 +14,6 @@ namespace MtgHelper
 			var d = controller.Down;
 			Topleft = new Point( (int) Math.Min( u.X, d.X ), (int) Math.Min( u.Y, d.Y ) );
 			Bottomright = new Point( (int) Math.Max( u.X, d.X ), (int) Math.Max( u.Y, d.Y ) );
-			controller.Close();
 		}
 	}
 }

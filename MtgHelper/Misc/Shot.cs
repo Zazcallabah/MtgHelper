@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace MtgHelper
+namespace MtgHelper.Misc
 {
 	public class Shot
 	{
@@ -10,6 +10,7 @@ namespace MtgHelper
 		readonly Point _topleft;
 		readonly Point _bottomright;
 
+		public Shot( Bitmap b, ScanArea a ) : this( b, a.TopLeft, a.BottomRight ) { }
 		public Shot( Bitmap b )
 			: this( b, new Point( 0, 0 ), new Point( b.Width, b.Height ) )
 		{
@@ -22,11 +23,11 @@ namespace MtgHelper
 			_bottomright = bottomright;
 		}
 
-		public Card[] GetCards()
+		public CardImage[] GetCards()
 		{
 
 			var c = GetColumns();
-			var l = new List<Card>();
+			var l = new List<CardImage>();
 			foreach( var col in c )
 				l.AddRange( col.GetCards() );
 			return l.ToArray();

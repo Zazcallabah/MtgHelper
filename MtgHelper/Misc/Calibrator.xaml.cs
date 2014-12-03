@@ -12,7 +12,7 @@ using System.Windows.Input;
 using Brushes = System.Windows.Media.Brushes;
 using Rectangle = System.Windows.Shapes.Rectangle;
 
-namespace MtgHelper
+namespace MtgHelper.Misc
 {
 	/// <summary>
 	/// Interaction logic for Calibrator.xaml

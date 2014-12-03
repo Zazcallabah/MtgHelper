@@ -7,11 +7,46 @@ namespace MtgHelper
 {
 	public static class ColorExt
 	{
-		public static long Crc32( this Bitmap bitmap )
+		public static Bitmap Cut( this Bitmap b, ImageArea area )
+		{
+			return b.Cut( area.Topleft, area.Bottomright );
+		}
+		public static Bitmap Cut( this Bitmap b, Point topleft, Point bottomright )
+		{
+			return b.Cut( topleft.X, topleft.Y, bottomright.X - topleft.X, bottomright.Y - topleft.Y );
+		}
+
+		public static Bitmap Cut( this Bitmap b, int x, int y, int width, int height )
+		{
+			var r = new Rectangle( x, y, width, height );
+
+			var copy = new Bitmap( r.Width, r.Height );
+			using( Graphics g = Graphics.FromImage( copy ) )
+			{
+				g.DrawImage( b, 0, 0, r, GraphicsUnit.Pixel );
+			}
+			return copy;
+		}
+		public static Bitmap Scale( this Bitmap b, float f )
+		{
+			var w = (int) ( b.Width * f );
+			var h = (int) ( b.Height * f );
+			Bitmap result = new Bitmap( w, h );
+			using( Graphics g = Graphics.FromImage( result ) )
+			{
+				g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+				g.DrawImage( b, 0, 0, w, h );
+			}
+			return result;
+
+		}
+
+
+		public static long Crc32( this Bitmap bitmap, Rectangle bounds )
 		{
 			var crc = new Crc32();
-			BitmapData bmpdata = bitmap.LockBits( new Rectangle( 0, 0, bitmap.Width, bitmap.Height ), ImageLockMode.ReadOnly, bitmap.PixelFormat );
-			int numbytes = bmpdata.Stride * bitmap.Height;
+			BitmapData bmpdata = bitmap.LockBits( bounds, ImageLockMode.ReadOnly, bitmap.PixelFormat );
+			int numbytes = bmpdata.Stride * bmpdata.Height;
 			byte[] bytedata = new byte[numbytes];
 			IntPtr ptr = bmpdata.Scan0;
 
@@ -21,6 +56,16 @@ namespace MtgHelper
 			crc.Update( bytedata );
 			return crc.Value;
 		}
+
+		public static long Crc32( this Bitmap bitmap, Point topLeft, Point bottomRight )
+		{
+			return Crc32( bitmap, new Rectangle( topLeft, new Size( bottomRight ) ) );
+		}
+		public static long Crc32( this Bitmap bitmap )
+		{
+			return Crc32( bitmap, new Rectangle( 0, 0, bitmap.Width, bitmap.Height ) );
+		}
+
 		public static void Mask( this Bitmap b )
 		{
 			for( int x = 0; x < b.Width; x++ )
@@ -77,7 +122,7 @@ namespace MtgHelper
 
 		static bool IsBlack( int value )
 		{
-			return value < 20;
+			return value < 30;
 		}
 	}
 }

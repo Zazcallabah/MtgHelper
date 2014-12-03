@@ -54,21 +54,39 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CalibrationController.cs" />
-    <Compile Include="CalibrationObject.cs" />
-    <Compile Include="Calibrator.xaml.cs">
+    <Compile Include="CardCollectionExtractor.cs" />
+    <Compile Include="CollectionDetector.cs" />
+    <Compile Include="Misc\CalibrationController.cs" />
+    <Compile Include="Misc\CalibrationObject.cs" />
+    <Compile Include="Misc\Calibrator.xaml.cs">
       <DependentUpon>Calibrator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Card.cs" />
+    <Compile Include="Misc\CardCache.cs" />
+    <Compile Include="Misc\CardImage.cs" />
     <Compile Include="ColorExt.cs" />
-    <Compile Include="Column.cs" />
-    <Compile Include="Controller.cs" />
+    <Compile Include="Misc\Column.cs" />
+    <Compile Include="Misc\Controller.cs" />
     <Compile Include="Crc32.cs" />
+    <Compile Include="Detector.xaml.cs">
+      <DependentUpon>Detector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImageArea.cs" />
+    <Compile Include="Misc\ScanArea.cs" />
+    <Compile Include="Misc\ScanAreaFactory.cs" />
     <Compile Include="ScreenCapture.cs" />
-    <Compile Include="Shot.cs" />
-    <Page Include="Calibrator.xaml">
+    <Compile Include="ScreenShotEngine.cs" />
+    <Compile Include="Misc\Shot.cs" />
+    <Compile Include="ShowImage.xaml.cs">
+      <DependentUpon>ShowImage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Misc\TesseractOcr.cs" />
+    <Page Include="Misc\Calibrator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Detector.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -82,6 +100,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ShowImage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -106,9 +128,20 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Misc\tessdata\eng.traineddata">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Misc\tessdata\mtg.traineddata">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Misc\tesseract.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

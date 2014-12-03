@@ -12,25 +12,22 @@ namespace MtgHelper
 
 		public MainWindow()
 		{
-			DataContext = new Controller();
+			var se = new ScreenShotEngine();
+			DataContext = new Controller( se );
 			InitializeComponent();
-			Calibrate();
+			se.Start();
 		}
 
-		public void Calibrate()
-		{
-			var controller = new CalibrationController();
-			var search = new Calibrator { Controller = controller };
-			var result = search.ShowDialog();
-			if( !result.HasValue || !result.Value )
-				Close();
+		//public void Calibrate()
+		//{
+		//	var controller = new CalibrationController();
+		//	var search = new Calibrator { Controller = controller };
+		//	var result = search.ShowDialog();
+		//	if( !result.HasValue || !result.Value )
+		//		Close();
 
-			( (Controller) DataContext ).Init( new CalibrationObject( controller ) );
-		}
+		//	( (Controller) DataContext ).Init( new CalibrationObject( controller ) );
+		//}
 
-		void ButtonBase_OnClick( object sender, RoutedEventArgs e )
-		{
-			Calibrate();
-		}
 	}
 }

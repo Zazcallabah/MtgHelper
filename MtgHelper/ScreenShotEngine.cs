@@ -17,7 +17,7 @@ namespace MtgHelper
 
 	public class ImageStore
 	{
-		public ImageStore( Image bitmap, long crc, RelevantWindows window )
+		public ImageStore( Bitmap bitmap, long crc, RelevantWindows window )
 		{
 			Image = bitmap;
 			Crc = crc;
@@ -26,7 +26,7 @@ namespace MtgHelper
 
 		public RelevantWindows Window { get; set; }
 		public long Crc { get; set; }
-		public Image Image { get; set; }
+		public Bitmap Image { get; set; }
 	}
 	public class HandleStore
 	{
@@ -49,10 +49,13 @@ namespace MtgHelper
 			{559831290,RelevantWindows.Main}
 		};
 		readonly List<ImageStore> _images = new List<ImageStore>();
-		readonly List<HandleStore> _relevantHandles = new List<HandleStore>();
 		Thread _worker;
 		bool _continue;
 
+		public ImageStore[] Images()
+		{
+			return _images.ToArray();
+		}
 
 		public ScreenShotEngine()
 		{
@@ -72,42 +75,17 @@ namespace MtgHelper
 			{
 
 				var handleCandidate = _sc.GetHandle();
-				if( _relevantHandles.All( r => r.Ptr != handleCandidate ) )
+				var test = _sc.CaptureScreen( handleCandidate );
+				if( test != null )
 				{
-					var test = _sc.CaptureScreen( handleCandidate );
-					if( test != null )
+					//this cut may have to be something different
+					var cut = test.Cut( 0, 0, 35, 24 );
+					var crc = cut.Crc32();
+					if( _crcLookup.ContainsKey( crc ) )
 					{
-						//this cut may have to be something different
-						var cut = test.Cut( 0, 0, 35, 24 );
-						var crc = cut.Crc32();
-
-
-						if( _crcLookup.ContainsKey( crc ) )
-						{
-							var window = _crcLookup[crc];
-							Test( test, window );
-							_relevantHandles.Add( new HandleStore( handleCandidate, window ) );
-						}
+						var window = _crcLookup[crc];
+						Test( test, window );
 					}
-				}
-				var badHandles = new List<HandleStore>();
-				foreach( var h in _relevantHandles )
-				{
-					try
-					{
-						var img = _sc.CaptureScreen( h.Ptr );
-						if( img != null )
-							Test( img, h.Window );
-					}
-					catch( InvalidOperationException )
-					{
-						badHandles.Add( h );
-					}
-				}
-
-				foreach( var h in badHandles )
-				{
-					_relevantHandles.Remove( h );
 				}
 
 				Wait( WaitPeriod );

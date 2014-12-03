@@ -23,9 +23,16 @@ namespace MtgHelper
 			if( bounds.Width == 0 || bounds.Height == 0 )
 				return null;
 			var result = new Bitmap( bounds.Width, bounds.Height );
-			using( var g = Graphics.FromImage( result ) )
+			try
 			{
-				g.CopyFromScreen( new Point( bounds.Left, bounds.Top ), Point.Empty, bounds.Size );
+				using( var g = Graphics.FromImage( result ) )
+				{
+					g.CopyFromScreen( new Point( bounds.Left, bounds.Top ), Point.Empty, bounds.Size );
+				}
+			}
+			catch( ArgumentException )
+			{
+				return null;
 			}
 			return result;
 		}
