@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace MtgHelperTests
+namespace MtgHelper.Store
 {
 	public class Serializer
 	{

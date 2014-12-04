@@ -84,11 +84,12 @@
     <Compile Include="ScreenCapture.cs" />
     <Compile Include="ScreenShotEngine.cs" />
     <Compile Include="Misc\Shot.cs" />
-    <Compile Include="Serializer.cs" />
+    <Compile Include="Store\Serializer.cs" />
     <Compile Include="ShowImage.xaml.cs">
       <DependentUpon>ShowImage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Misc\TesseractOcr.cs" />
+    <Compile Include="Store\Store.cs" />
     <Page Include="Misc\Calibrator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -151,6 +152,12 @@
     <Content Include="Misc\tesseract.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Store\card.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Store\crc.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
