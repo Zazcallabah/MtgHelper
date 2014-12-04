@@ -2,3 +2,7 @@ bin
 obj
 *.suo
 *.user
+tessdata
+Tesseract-OCR
+UnitTestProject1/screens
+MtgHelper/screens
